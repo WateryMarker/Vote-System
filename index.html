@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popular Vote | ชุดรีไซเคิล วันวิทยาศาสตร์</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --text: #e6f3ff;
+            --muted: #94a3b8;
+            --accent: #22c55e;
+            --sky: #38bdf8;
+            --warn: #fbbf24;
+            --card: #13243c;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, "Noto Sans Thai", sans-serif;
+            color: var(--text);
+            background: linear-gradient(180deg, #070a14, #0b1425 40%, #091121);
+            overflow-x: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        canvas.stars {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: -3
+        }
+
+        canvas.stars.layer2 {
+            z-index: -2
+        }
+
+        .orbit {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: min(65vmin, 540px);
+            height: min(65vmin, 540px);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px dashed rgba(56, 189, 248, .25);
+            animation: spin 60s linear infinite;
+            z-index: -1
+        }
+
+        .orbit::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: -6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 12px #38bdf8;
+            transform: translateX(-50%)
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg)
+            }
+        }
+
+        header {
+            text-align: center;
+            padding: 28px 16px 18px;
+            position: relative
+        }
+
+        /* ========== เมนูบาร์ใหม่ ========== */
+        .menu-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(2, 12, 27, 0.7);
+            z-index: 1000;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            border-bottom: 2px solid #64ffda;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: #64ffda;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ccd6f6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ccd6f6;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:hover {
+            color: #64ffda;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #64ffda;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .staff-btn-menu {
+            background: linear-gradient(135deg, #0a7cff 0%, #0053d6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 83, 214, 0.4);
+        }
+
+        .staff-btn-menu:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 83, 214, 0.6);
+        }
+
+        /* ========== ปรับ header เดิม ========== */
+        .title {
+            font-size: clamp(26px, 5.8vw, 42px);
+            margin: 95px auto 8px;
+            font-weight: bold;
+            font-size: x-large;
+            text-shadow: 0 0 12px rgba(56, 189, 248, .35);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin: 0 auto;
+            max-width: 900px
+        }
+
+        .staff-btn {
+            position: absolute;
+            right: 16px;
+            top: 80px;
+            background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+            color: #062033;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+            text-decoration: none;
+            font-size: 75%;
+        }
+
+        .staff-btn:hover {
+            filter: brightness(1.05)
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 16px 64px
+        }
+
+        .panel {
+            background: rgba(19, 36, 60, .92);
+            border: 1px solid rgba(148, 163, 184, .22);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 50px
+        }
+
+        .panel h2 {
+            margin: 10px 8px;
+            font-size: 20px
+                /* margin: 10px auto 0; */
+
+        }
+
+        .list {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr))
+        }
+
+        .item {
+            background: linear-gradient(160deg, #1b2a42 0%, #0f1b2f 60%);
+            border: 1px solid rgba(148, 163, 184, .25);
+            border-radius: 18px;
+            padding: 16px;
+            position: relative;
+            transition: .2s
+        }
+
+        .item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(148, 163, 184, .45)
+        }
+
+        .num {
+            font-weight: 900;
+            font-size: 18px;
+            color: #86efac
+        }
+
+        .name {
+            color: #e2e8f0;
+            margin-top: 2px
+        }
+
+        .votes {
+            font-size: 34px;
+            font-weight: 900;
+            margin: 10px 0 6px;
+            color: var(--warn)
+        }
+
+        .crown {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, .9))
+        }
+
+        #stats {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px
+        }
+
+        input,
+        select {
+            flex: 1;
+            min-width: 120px;
+            background: #0f1a2a;
+            border: 1px solid rgba(148, 163, 184, .25);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: var(--text)
+        }
+
+        @media(max-width:640px) {
+            .list {
+                grid-template-columns: 1fr
+            }
+
+            .item {
+                padding: 18px
+            }
+
+            .votes {
+                font-size: 38px
+            }
+
+            .panel {
+                padding: 16px
+            }
+
+            /* Responsive สำหรับเมนู */
+            .nav-links {
+                display: none;
+            }
+
+            .menu-bar {
+                padding: 0 15px;
+            }
+        }
+
+        /* พื้นหลังเมนู */
+        .badge {
+            position: fixed;
+            top: 70px;
+            /* ปรับให้อยู่ใต้เมนูบาร์ */
+            left: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #0d1b6e, #1e3c72, #2a5298);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            font-family: "Segoe UI", sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Gradient background animation */
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* เพิ่มดวงดาวกระพริบ */
+        .badge::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            animation: twinkle 5s linear infinite;
+        }
+
+        @keyframes twinkle {
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 0.4;
+            }
+        }
+
+        /* หัวเรื่องใหญ่ */
+        .badge h1 {
+            font-size: 25px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 3px;
+            color: #00e5ff;
+            text-shadow: 0 0 15px #00e5ff, 0 0 30px #2196f3;
+            position: relative;
+        }
+
+        /* เส้นเรืองแสงใต้ h1 */
+        .badge h1::after {
+            content: "";
+            display: block;
+            width: 95px;
+            height: 4px;
+            margin: 10px auto 0;
+            background: #00e5ff;
+            box-shadow: 0 0 10px #00e5ff, 0 0 20px #2196f3;
+            border-radius: 2px;
+        }
+
+        /* รอง */
+        .badge h2 {
+            font-size: 18px;
+            margin: 5px 0;
+            color: #e3f2fd;
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+        }
+
+        /* คำโปรย */
+        .badge p {
+            font-size: 16px;
+            margin: 0;
+            color: #bbdefb;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        /* ========== ส่วนเครดิต ========== */
+        .credits {
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 40px;
+            color: var(--muted);
+            font-size: 14px;
+            position: relative;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .credits-content {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(19, 36, 60, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .credits-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #64ffda;
+            text-shadow: 0 0 8px rgba(100, 255, 218, 0.4);
+        }
+
+        .developer {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dev-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .dev-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .dev-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a7cff, #0053d6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 83, 214, 0.4);
+        }
+
+        .dev-name {
+            font-weight: 600;
+            color: #ccd6f6;
+            margin-bottom: 5px;
+        }
+
+        .dev-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            color: #64ffda;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: #38bdf8;
+            transform: scale(1.2);
+        }
+
+        .made-with {
+            margin-top: 15px;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 640px) {
+            .developer {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .credits-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-layer">
+        <canvas class="stars layer1"></canvas>
+        <canvas class="stars layer2"></canvas>
+    </div>
+    <div class="orbit"></div>
+
+    <!-- เมนูบาร์ใหม่ -->
+    <nav class="menu-bar">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-atom"></i></div>
+            <div class="logo-text">Science day - TNW</div>
+        </div>
+
+        <!-- <div class="nav-links">
+            <a href="#"><i class="fas fa-home"></i> หน้าหลัก</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> กิจกรรม</a>
+            <a href="#"><i class="fas fa-trophy"></i> การประกวด</a>
+            <a href="#"><i class="fas fa-images"></i> รูปภาพ</a>
+            <a href="#"><i class="fas fa-info-circle"></i> เกี่ยวกับ</a>
+        </div> -->
+
+        <button class="staff-btn-menu" onclick="location.href='staff.html'">
+            <i class="fas fa-users-cog"></i> Staff Panel
+        </button>
+    </nav>
+
+    <header>
+        <div class="badge">
+            <div class="badge-content">
+                <h1>วันวิทยาศาสตร์</h1>
+                <h2>โรงเรียนธาตุนารายณ์วิทยา</h2>
+                <p>การประกวดชุดรีไซเคิล</p>
+            </div>
+        </div>
+        <a href="staff.html" class="staff-btn">เข้าสู่ Staff Panel</a>
+        <h1 class="title">Popular Vote – ชุดรีไซเคิล</h1>
+        <p class="subtitle">โหวตความปัง ความเริศ </p>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>จัดการ</h2>
+            <div class="row">
+                <input id="searchInput" placeholder="ค้นหา" />
+                <select id="sortSelect">
+                    <option value="votes-desc">คะแนนมาก→น้อย</option>
+                    <option value="votes-asc">คะแนนน้อย→มาก</option>
+                    <option value="num-asc">หมายเลขน้อย→มาก</option>
+                    <option value="num-desc">หมายเลขมาก→น้อย</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>📊 กระดานคะแนน</h2>
+            <div id="list" class="list"></div>
+            <p id="stats"></p>
+        </section>
+
+        <!-- ส่วนเครดิต -->
+        <div class="credits">
+            <div class="credits-content">
+                <div class="credits-title">พัฒนาโดย</div>
+                <div class="developer">
+                    <div class="dev-item">
+                        <div class="dev-avatar">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="dev-name">fire_plac3</div>
+                        <div class="dev-social">
+                            <a href="https://www.instagram.com/fire_plac3/" class="social-link" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dev-item">
+                        <div class="dev-avatar">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="dev-name">1lawii.sa</div>
+                        <div class="dev-social">
+                            <a href="https://www.instagram.com/1lawii.sa/" class="social-link" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="made-with">
+                    Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for Science Day
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ดาวระยิบระยับ (2 เลเยอร์ เบา ๆ)
+        (function starfield() {
+            const layers = [
+                { sel: ".layer1", count: 60, size: [0.8, 1.6], speed: [0.02, 0.06] },
+                { sel: ".layer2", count: 100, size: [1.0, 2.0], speed: [0.04, 0.08] },
+            ];
+            const canvases = layers.map(l => ({ cfg: l, el: document.querySelector(l.sel), ctx: null, stars: [] }));
+            let W = innerWidth, H = innerHeight;
+            const rand = (a, b) => a + Math.random() * (b - a);
+            const make = (L) => ({ x: Math.random() * W, y: Math.random() * H, r: rand(L.cfg.size[0], L.cfg.size[1]), s: rand(L.cfg.speed[0], L.cfg.speed[1]) });
+            function init() { W = innerWidth; H = innerHeight; canvases.forEach(L => { const c = L.el; c.width = W; c.height = H; L.ctx = c.getContext("2d"); L.stars = Array.from({ length: L.cfg.count }, () => make(L)); }); }
+            function draw() { canvases.forEach(L => { const ctx = L.ctx; ctx.clearRect(0, 0, W, H); for (const s of L.stars) { s.x += s.s; if (s.x > W) s.x -= W; ctx.globalAlpha = 0.6; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1; }); requestAnimationFrame(draw); }
+            addEventListener("resize", init); init(); requestAnimationFrame(draw);
+        })();
+
+        // ===== Utilities =====
+        const $ = sel => document.querySelector(sel);
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[m]));
+        }
+        // ✅ ใส่จุลภาคคั่นหลักพันให้คะแนนและสถิติ
+        function formatNum(n) {
+            const x = Number(n ?? 0);
+            return x.toLocaleString('en-US'); // เปลี่ยนเป็น 'th-TH' ถ้าอยากใช้รูปแบบไทย
+        }
+
+        // ===== Scoreboard (อ่านจาก API) =====
+        let rows = [];
+
+        async function fetchScores() {
+            try {
+                const res = await fetch('api/get_scores.php', { cache: 'no-store' });
+                const json = await res.json();
+                if (json.ok && Array.isArray(json.data)) {
+                    rows = json.data;
+                    render();
+                }
+            } catch (e) {
+                console.warn('fetch error', e);
+            }
+        }
+
+        function filterSort(arr) {
+            const q = ($('#searchInput')?.value || '').trim().toLowerCase();
+            const sort = $('#sortSelect')?.value || 'votes-desc';
+            let a = arr.slice();
+            if (q) a = a.filter(x => String(x.num).includes(q) || (x.name || '').toLowerCase().includes(q));
+            const cmp = {
+                'votes-desc': (x, y) => (y.votes - x.votes) || (x.num - y.num),
+                'votes-asc': (x, y) => (x.votes - y.votes) || (x.num - y.num),
+                'num-asc': (x, y) => x.num - y.num,
+                'num-desc': (x, y) => y.num - x.num,
+            }[sort] || ((x, y) => (y.votes - x.votes) || (x.num - y.num));
+            return a.sort(cmp);
+        }
+
+        function render() {
+            const root = $('#list'); if (!root) return; root.innerHTML = '';
+            const arr = filterSort(rows);
+            if (!arr.length) {
+                root.innerHTML = "<div class='item'><div class='name'>ยังไม่มีข้อมูล</div><div class='votes'>0</div></div>";
+                const st = $('#stats'); if (st) st.textContent = '';
+                return;
+            }
+            const topNum = arr[0].num; // เพราะ default เรียงคะแนนมาก→น้อย
+            for (const x of arr) {
+                const el = document.createElement('div');
+                el.className = 'item';
+                el.innerHTML = `
+          <div class="num">หมายเลข ${x.num}</div>
+          <div class="name">${x.name ? escapeHtml(x.name) : '(ไม่มีชื่อ)'}</div>
+          <div class="votes">${formatNum(x.votes)}</div>
+          ${x.num === topNum ? '<div class="crown">👑</div>' : ''}
+        `;
+                root.appendChild(el);
+            }
+            const total = rows.reduce((s, x) => s + Number(x.votes || 0), 0);
+            const st = $('#stats'); if (st) st.textContent = `ทีมทั้งหมด: ${arr.length} | คะแนนรวม: ${formatNum(total)}`;
+        }
+
+        // ค้นหา/เรียง (มี null-guard)
+        $('#searchInput')?.addEventListener('input', render);
+        $('#sortSelect')?.addEventListener('change', render);
+
+        // โหลดครั้งแรก + รีเฟรชทุก 3 วิ
+        fetchScores();
+        setInterval(fetchScores, 3000);
+    </script>
+</body>
+
+</html>

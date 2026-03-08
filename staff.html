@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Staff Panel | Popular Vote</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a1222;
+            --bg2: #0c1a2f;
+            --card: #11233e;
+            --card2: #0e1b31;
+            --text: #e6f3ff;
+            --muted: #9fb0c8;
+            --sky: #38bdf8;
+            --accent: #22c55e;
+            --warn: #fbbf24;
+            --danger: #ef4444;
+            --stroke: rgba(148, 163, 184, .26);
+            --glow: 0 6px 24px rgba(0, 0, 0, .35);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, "Noto Sans Thai", sans-serif;
+            color: var(--text);
+            background: radial-gradient(900px 500px at 10% -10%, rgba(56, 189, 248, .08), transparent 60%),
+                radial-gradient(900px 500px at 100% 10%, rgba(34, 197, 94, .08), transparent 60%),
+                linear-gradient(180deg, var(--bg), var(--bg2));
+        }
+
+        /* ========== เมนูบาร์ใหม่ ========== */
+        .menu-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(2, 12, 27, 0.7);
+            z-index: 1000;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            border-bottom: 2px solid #64ffda;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: #64ffda;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ccd6f6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ccd6f6;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:hover {
+            color: #64ffda;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #64ffda;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .staff-btn-menu {
+            background: linear-gradient(135deg, #0a7cff 0%, #0053d6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 83, 214, 0.4);
+        }
+
+        .staff-btn-menu:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 83, 214, 0.6);
+        }
+
+        /* ========== ปรับ header เดิม ========== */
+        header {
+            position: relative;
+            text-align: center;
+            padding: 100px 16px 20px;
+        }
+
+        .top-right {
+            position: absolute;
+            right: 16px;
+            top: 90px;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, #0f2a47, #0d223a);
+            color: #e7f6ff;
+            box-shadow: var(--glow);
+            font-size: 80%;
+        }
+
+        .top-right:hover {
+            filter: brightness(1.05)
+        }
+
+        /* พื้นหลังเมนู */
+        .badge {
+            position: relative;
+            display: inline-block;
+            width: auto;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #0d1b6e, #1e3c72, #2a5298);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-family: "Segoe UI", sans-serif;
+            color: #fff;
+            overflow: hidden;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Gradient background animation */
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* เพิ่มดวงดาวกระพริบ */
+        .badge::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            animation: twinkle 5s linear infinite;
+        }
+
+        @keyframes twinkle {
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 0.4;
+            }
+        }
+
+        /* หัวเรื่องใหญ่ */
+        .badge-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: #00e5ff;
+            text-shadow: 0 0 10px #00e5ff, 0 0 20px #2196f3;
+            position: relative;
+            letter-spacing: 1px;
+        }
+
+        .title {
+            font-size: clamp(28px, 5.5vw, 42px);
+            margin: 20px 0 10px;
+            font-weight: 800;
+            letter-spacing: .3px;
+            text-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+            color: #e6f3ff;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin: 0 0 30px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 16px 70px
+        }
+
+        .panel {
+            background: linear-gradient(180deg, rgba(17, 35, 62, .94), rgba(14, 27, 49, .92));
+            border: 1px solid var(--stroke);
+            border-radius: 22px;
+            padding: 18px;
+            margin: 25px 0;
+            box-shadow: var(--glow)
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+            font-size: 20px
+        }
+
+        .card {
+            background: linear-gradient(160deg, var(--card) 0%, var(--card2) 70%);
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 14px;
+            margin: 10px 0
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        input,
+        select,
+        button {
+            font: inherit;
+            color: var(--text)
+        }
+
+        input,
+        select {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #0f1a2a;
+            border: 1px solid var(--stroke);
+            outline: none
+        }
+
+        input::placeholder {
+            color: #9fb0c8cc
+        }
+
+        button {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 800;
+            cursor: pointer;
+            min-height: 44px;
+            box-shadow: var(--glow)
+        }
+
+        .btn-sky {
+            background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+            color: #032033
+        }
+
+        .btn-yellow {
+            background: linear-gradient(180deg, #f8d048, #f59e0b);
+            color: #2b1a00
+        }
+
+        .btn-orange {
+            background: linear-gradient(180deg, #ff8b3e, #ea580c);
+            color: #2b0a00
+        }
+
+        .btn-blue {
+            background: linear-gradient(180deg, #68c6ff, #0ea5e9);
+            color: #062033
+        }
+
+        .btn-danger {
+            background: linear-gradient(180deg, #ef4444, #dc2626);
+            color: #2b0202
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--stroke)
+        }
+
+        .list {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+        }
+
+        .item {
+            background: linear-gradient(160deg, #1b2a42 0%, #0f1b2f 60%);
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 16px;
+            position: relative;
+            transition: .18s ease;
+            isolation: isolate
+        }
+
+        .item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(148, 163, 184, .45)
+        }
+
+        .num {
+            font-weight: 900;
+            font-size: 18px;
+            color: #86efac
+        }
+
+        .name {
+            color: #e2e8f0;
+            margin-top: 2px
+        }
+
+        .votes {
+            font-size: 40px;
+            font-weight: 900;
+            margin: 12px 0 6px;
+            color: var(--warn)
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px
+        }
+
+        .crown {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, .9));
+            z-index: 1
+        }
+
+        .mini {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        #stats {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        /* กันคีย์บอร์ดเด้งจาก touch/overlay */
+        .delta-input {
+            position: relative;
+            z-index: 1;
+            touch-action: manipulation
+        }
+
+        @media (max-width:640px) {
+            .menu-bar {
+                padding: 0 15px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .panel {
+                padding: 16px
+            }
+
+            .list {
+                grid-template-columns: 1fr
+            }
+
+            .votes {
+                font-size: 44px
+            }
+
+            .top-right {
+                padding: 8px 12px;
+                top: 85px;
+            }
+
+            header {
+                padding: 90px 16px 20px;
+            }
+        }
+
+
+
+        .credits {
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 40px;
+            color: var(--muted);
+            font-size: 14px;
+            position: relative;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .credits-content {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(19, 36, 60, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .credits-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #64ffda;
+            text-shadow: 0 0 8px rgba(100, 255, 218, 0.4);
+        }
+
+        .developer {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dev-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .dev-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .dev-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a7cff, #0053d6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 83, 214, 0.4);
+        }
+
+        .dev-name {
+            font-weight: 600;
+            color: #ccd6f6;
+            margin-bottom: 5px;
+        }
+
+        .dev-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            color: #64ffda;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: #38bdf8;
+            transform: scale(1.2);
+        }
+
+        .made-with {
+            margin-top: 15px;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 640px) {
+            .developer {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .credits-content {
+                padding: 15px;
+            }
+        }
+
+
+        /* ========== ส่วนเครดิต ========== */
+        .credits {
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 40px;
+            color: var(--muted);
+            font-size: 14px;
+            position: relative;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .credits-content {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(19, 36, 60, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .credits-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #64ffda;
+            text-shadow: 0 0 8px rgba(100, 255, 218, 0.4);
+        }
+
+        .developer {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dev-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .dev-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .dev-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a7cff, #0053d6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 83, 214, 0.4);
+        }
+
+        .dev-name {
+            font-weight: 600;
+            color: #ccd6f6;
+            margin-bottom: 5px;
+        }
+
+        .dev-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            color: #64ffda;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: #38bdf8;
+            transform: scale(1.2);
+        }
+
+        .made-with {
+            margin-top: 15px;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 640px) {
+            .developer {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .credits-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- เมนูบาร์ใหม่ -->
+    <nav class="menu-bar">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-atom"></i></div>
+            <div class="logo-text">Science day - TNW</div>
+        </div>
+
+        <!-- <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> หน้าหลัก</a>
+            <a href="#"><i class="fas fa-trophy"></i> การประกวด</a>
+            <a href="#"><i class="fas fa-info-circle"></i> เกี่ยวกับ</a>
+        </div> -->
+
+        <button class="staff-btn-menu" onclick="location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> กลับหน้า Vote
+        </button>
+    </nav>
+
+    <header>
+        <!-- <a href="index.html" class="top-right">กลับหน้าแรก</a> -->
+        <!-- <div class="badge">
+            <div class="badge-text">วันวิทยาศาสตร์ · ประกวดชุดรีไซเคิล</div>
+        </div> -->
+        <h1 class="title">แผงควบคุมสตาฟ</h1>
+    </header>
+
+    <main class="container">
+        <!-- Login -->
+        <section class="panel" id="loginPanel">
+            <h2>🔒 เข้าสู่ระบบสตาฟ</h2>
+            <div class="row">
+                <input id="pinInput" type="password" placeholder="PIN" />
+                <button id="loginBtn" class="btn-sky" type="button">เข้าสู่ระบบ</button>
+            </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="panel" id="controlPanel" style="display:none">
+            <div class="card">
+                <h3>เพิ่มผู้เข้าประกวด</h3>
+                <div class="row">
+                    <input id="numInput" placeholder="หมายเลข" inputmode="numeric" />
+                    <input id="nameInput" placeholder="ชื่อทีม/ชื่อผู้สมัคร" />
+                    <button id="addContestantBtn" class="btn-sky" type="button">เพิ่ม</button>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <input id="searchInput" placeholder="ค้นหาหมายเลขหรือชื่อ" />
+                    <select id="sortSelect">
+                        <option value="num-asc">หมายเลขน้อย→มาก (แนะนำ)</option>
+                        <option value="num-desc">หมายเลขมาก→น้อย</option>
+                        <option value="votes-desc">คะแนนมาก→น้อย</option>
+                        <option value="votes-asc">คะแนนน้อย→มาก</option>
+                    </select>
+                </div>
+                <div class="mini"></div>
+            </div>
+        </section>
+
+        <!-- Scoreboard -->
+        <section class="panel">
+            <h2>📊 กระดานคะแนน</h2>
+            <div id="list" class="list"></div>
+            <p id="stats"></p>
+        </section>
+    </main>
+
+
+    <!-- ส่วนเครดิต -->
+    <div class="credits">
+        <div class="credits-content">
+            <div class="credits-title">พัฒนาโดย</div>
+            <div class="developer">
+                <div class="dev-item">
+                    <div class="dev-avatar">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="dev-name">fire_plac3</div>
+                    <div class="dev-social">
+                        <a href="https://www.instagram.com/fire_plac3/" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="dev-item">
+                    <div class="dev-avatar">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="dev-name">1lawii.sa</div>
+                    <div class="dev-social">
+                        <a href="https://www.instagram.com/1lawii.sa/" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="made-with">
+                Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for Science Day
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== API endpoints =====
+        const API = {
+            list: 'api/get_scores.php',
+            add: 'api/add.php',
+            vote: 'api/vote.php',
+            remove: 'api/delete.php'
+        };
+
+        // ===== utils =====
+        const $ = s => document.querySelector(s);
+        const escapeHtml = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[m]));
+        function toast(msg) {
+            const el = document.createElement('div'); el.textContent = msg;
+            el.style.cssText = "position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#0f1a2a;border:1px solid rgba(148,163,184,.35);padding:10px 14px;border-radius:12px;color:#e6f3ff;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.3)";
+            document.body.appendChild(el);
+            setTimeout(() => { el.style.transition = 'all .25s'; el.style.opacity = '0'; el.style.transform = 'translate(-50%,-6px)'; setTimeout(() => el.remove(), 250) }, 1000);
+        }
+        // แปลงตัวเลขให้มีคอมมา
+        function formatNum(n) {
+            const x = Number(n);
+            return Number.isFinite(x) ? x.toLocaleString('th-TH') : String(n);
+        }
+
+        // ===== state =====
+        let staff = false;
+        let rows = [];
+        let isEditing = false; // กัน render/รีเฟรช ตอนพิมพ์มือถือ
+
+        // ===== API calls =====
+        async function fetchScores() {
+            try {
+                const r = await fetch(API.list, { cache: 'no-store' }); const j = await r.json();
+                if (j.ok) {
+                    rows = j.data || [];
+                    if (!isEditing) render(); // ไม่รื้อ DOM ตอนกำลังพิมพ์
+                } else console.warn(j.error);
+            } catch (e) { console.warn(e); }
+        }
+        async function apiAdd(num, name) {
+            const r = await fetch(API.add, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ num: Number(num), name: String(name || '') }) });
+            const j = await r.json(); if (!j.ok) throw new Error(j.error || 'add failed');
+        }
+        async function apiVote(num, diff) {
+            const r = await fetch(API.vote, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ num: Number(num), diff: Number(diff) }) });
+            const j = await r.json(); if (!j.ok) throw new Error(j.error || 'vote failed');
+        }
+        async function apiDelete(num) {
+            const r = await fetch(API.remove, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ num: Number(num) }) });
+            const j = await r.json(); if (!j.ok) throw new Error(j.error || 'delete failed');
+        }
+
+        // ===== sort/filter (default = num-asc) =====
+        function filterSort() {
+            const q = ($('#searchInput')?.value || '').trim().toLowerCase();
+            const s = $('#sortSelect')?.value || 'num-asc';
+            let arr = rows.slice();
+            if (q) arr = arr.filter(x => String(x.num).includes(q) || (x.name || '').toLowerCase().includes(q));
+            const cmp = {
+                'votes-desc': (a, b) => (b.votes - a.votes) || (a.num - b.num),
+                'votes-asc': (a, b) => (a.votes - b.votes) || (a.num - b.num),
+                'num-asc': (a, b) => a.num - b.num,
+                'num-desc': (a, b) => b.num - a.num
+            }[s];
+            return arr.sort(cmp);
+        }
+
+        // ===== render =====
+        function render() {
+            if (isEditing) return; // งดรื้อ DOM ระหว่างพิมพ์
+            const root = $('#list'); root.innerHTML = '';
+            const arr = filterSort();
+            if (!arr.length) {
+                root.innerHTML = "<div class='item'><div class='name'>ยังไม่มีข้อมูล</div><div class='votes'>0</div></div>";
+                $('#stats').textContent = ''; return;
+            }
+            const topNum = [...arr].sort((a, b) => b.votes - a.votes || a.num - b.num)[0]?.num;
+
+            for (const x of arr) {
+                const el = document.createElement('div'); el.className = 'item'; el.dataset.num = String(x.num);
+                el.innerHTML = `
+        <div class="num">หมายเลข ${x.num}</div>
+        <div class="name">${x.name ? escapeHtml(x.name) : '(ไม่มีชื่อ)'}</div>
+        <div class="votes">${formatNum(x.votes)}</div>
+
+        ${staff ? `
+        <div class="controls">
+          <button class="btn-yellow" data-action="plus1">+1</button>
+          <button class="btn-orange" data-action="plus5">+5</button>
+          <button class="btn-blue"   data-action="minus1">-1</button>
+          <button class="btn-blue"   data-action="minus5">-5</button>
+          <button class="btn-danger" data-action="remove">ลบ</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input class="delta-input" type="text" inputmode="numeric" pattern="-?[0-9]*"
+                 placeholder="ใส่คะแนน เช่น 7 หรือ -3"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 data-num="${x.num}" style="flex:2" />
+          <button class="btn-sky applyBtn" data-action="apply">ใส่คะแนน</button>
+        </div>
+        `: ''}
+
+        ${x.num === topNum ? '<div class="crown">👑</div>' : ''}
+      `;
+                root.appendChild(el);
+
+                // bind apply per-card
+                if (staff) {
+                    const input = el.querySelector('.delta-input');
+                    const applyBtn = el.querySelector('.applyBtn');
+
+                    // กันคีย์บอร์ดเด้งบนมือถือ: โฟกัสแล้วหยุดรีเฟรช, เลิกพิมพ์หน่วงก่อนกลับมา
+                    input.addEventListener('focus', () => { isEditing = true; });
+                    input.addEventListener('blur', () => { setTimeout(() => { isEditing = false; }, 120); });
+
+                    const doApply = async () => {
+                        const raw = (input.value || '').trim();
+                        if (!raw) return;
+                        const m = raw.match(/^([+-]?\d{1,5})$/); // รับ +7, 7, -3, 15, -20
+                        if (!m) { toast('กรุณาใส่จำนวนเต็ม เช่น 7 หรือ -3'); return; }
+                        const diff = parseInt(m[1], 10);
+                        try {
+                            await apiVote(x.num, diff);
+                            input.value = ''; input.blur();
+                            fetchScores();
+                        } catch { toast('ใส่คะแนนไม่สำเร็จ'); }
+                    };
+                    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doApply(); } });
+                    applyBtn.addEventListener('click', doApply);
+                }
+            }
+            $('#stats').textContent =
+                `ทีมทั้งหมด: ${arr.length} | คะแนนรวม: ${formatNum(arr.reduce((s, x) => s + Number(x.votes || 0), 0))}`;
+        }
+
+        // ===== per-card buttons (delegation เฉพาะใน list) =====
+        $('#list').addEventListener('click', async e => {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const act = btn.dataset.action; if (!act) return;
+            const card = btn.closest('.item'); const num = Number(card?.dataset.num); if (!num) return;
+
+            try {
+                if (act === 'plus1') await apiVote(num, 1);
+                else if (act === 'plus5') await apiVote(num, 5);
+                else if (act === 'minus1') await apiVote(num, -1);
+                else if (act === 'minus5') await apiVote(num, -5);
+                else if (act === 'remove') { if (!confirm(`ลบหมายเลข ${num}?`)) return; await apiDelete(num); }
+                else if (act === 'apply') { return; } // จัดการใน per-card แล้ว
+                fetchScores();
+            } catch { toast('ทำรายการไม่สำเร็จ'); }
+        });
+
+        // ===== PIN (SHA-256) =====
+        const PIN_HASH_KEY = "recycle_vote_pin_sha256";
+        const DEFAULT_PIN = "147";
+        const PIN_VERSION = "v147-1";
+        function toHex(buf) { return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""); }
+        async function sha256Hex(t) { const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return toHex(d); }
+        async function ensureHashedPin() {
+            const cur = localStorage.getItem("recycle_vote_pin_ver");
+            if (!localStorage.getItem(PIN_HASH_KEY) || cur !== PIN_VERSION) {
+                localStorage.setItem(PIN_HASH_KEY, await sha256Hex(DEFAULT_PIN));
+                localStorage.setItem("recycle_vote_pin_ver", PIN_VERSION);
+            }
+            localStorage.removeItem("recycle_vote_pin");
+        }
+        async function verifyPin(p) { return (await sha256Hex(p || "")) === (localStorage.getItem(PIN_HASH_KEY) || ""); }
+
+        // กัน touch จาก parent ทำให้ input เสียโฟกัสบนมือถือ
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.delta-input')) e.stopPropagation();
+        }, { passive: true });
+
+        // ===== init =====
+        (async function init() {
+            await ensureHashedPin();
+            fetchScores();
+            setInterval(() => { if (!isEditing) fetchScores(); }, 3000);
+
+            $('#loginBtn').onclick = async () => {
+                if (await verifyPin($('#pinInput').value)) {
+                    staff = true;
+                    $('#loginPanel').style.display = 'none';
+                    $('#controlPanel').style.display = 'block';
+
+                    // top controls
+                    $('#addContestantBtn').onclick = async () => {
+                        const num = $('#numInput').value.trim(), name = $('#nameInput').value.trim();
+                        if (!/^[0-9]{1,4}$/.test(num)) return toast('กรุณาใส่หมายเลข 1–4 หลัก');
+                        try {
+                            await apiAdd(num, name);
+                            $('#numInput').value = ''; $('#nameInput').value = '';
+                            toast('เพิ่มรายการแล้ว'); fetchScores();
+                        } catch { toast('เพิ่มไม่สำเร็จ'); }
+                    };
+                    $('#searchInput').oninput = render;
+                    $('#sortSelect').onchange = render;
+
+                    render(); // ให้การ์ดมีปุ่มควบคุม
+                } else {
+                    alert('PIN ไม่ถูกต้อง');
+                    $('#pinInput').focus(); $('#pinInput').select?.();
+                }
+            };
+        })();
+    </script>
+</body>
+
+</html>
